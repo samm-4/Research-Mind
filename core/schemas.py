@@ -47,3 +47,15 @@ class ArbitratorVerdict(BaseModel):
     accepted: bool
     reason: str
     best_output: Optional[ResearcherOutput] = None
+
+
+class SynthesizedResult(BaseModel):
+    """
+    The final compiled output of a single research stage.
+    
+    Contains a unified markdown report that highlights consensus, debates,
+    and missing information from all researchers' findings.
+    """
+    subquery: str
+    synthesized_report: str
+    sources: List[str]

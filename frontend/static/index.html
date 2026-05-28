@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResearchMind — Academic Synthesis Engine</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300..500;1,300..500&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Marked.js (Markdown renderer) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container" id="app-container">
+        
+        <!-- SIDEBAR: Past Reports History -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon-mark">RM</div>
+                    <span>ResearchMind</span>
+                </div>
+                <button class="btn-sidebar-collapse" id="btn-sidebar-collapse" title="Collapse Sidebar">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Dossiers</h3>
+                <div class="history-container" id="history-list">
+                    <!-- Loaded dynamically via js -->
+                    <div class="history-loading">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Loading history...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <span>LangGraph v0.2 · 4-agent</span>
+                <span class="version-badge">v2.0β</span>
+            </div>
+        </aside>
+
+        <!-- MAIN LAYOUT -->
+        <main class="main-content" id="main-content">
+            <!-- Sidebar Expand Button (visible only when sidebar is collapsed) -->
+            <button class="btn-sidebar-expand hidden" id="btn-sidebar-expand" title="Expand Sidebar">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <!-- VIEW 1: SEARCH ENTRY PORTAL -->
+            <section class="view-panel" id="view-search">
+                <div class="search-hero">
+                    <div class="home-eyebrow">Academic synthesis engine</div>
+                    <h1 class="home-headline">Deep research,<br><em>orchestrated.</em></h1>
+                    <p class="tagline">A multi-agent framework that plans, retrieves, arbitrates, and synthesises academic literature into structured dossiers.</p>
+                </div>
+
+                <div class="search-container-card">
+                    <form id="search-form" class="search-form">
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="search-input" 
+                                placeholder="e.g. CRISPR base editing vs prime editing specificity..." 
+                                autocomplete="off" 
+                                required
+                            >
+                        </div>
+                        <button type="submit" class="btn-research" id="btn-submit">
+                            EXECUTE &nbsp;<i class="fa-solid fa-arrow-right-long"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Suggestions Shortcuts -->
+                <div class="suggestions-container">
+                    <div class="suggestions-grid">
+                        <button class="suggestion-chip" data-query="Solid-state lithium batteries silicon anode vs lithium metal anode volume expansion">
+                            <span class="chip-icon">⚡</span> Silicon vs Li anodes
+                        </button>
+                        <button class="suggestion-chip" data-query="Sodium-ion batteries hard carbon anode sodium plating mechanisms">
+                            <span class="chip-icon">🔋</span> Sodium-ion anodes
+                        </button>
+                        <button class="suggestion-chip" data-query="State Space Models SSMs vs Transformers throughput and perplexity in long-context retrieval">
+                            <span class="chip-icon">🧠</span> SSMs vs Transformers
+                        </button>
+                        <button class="suggestion-chip" data-query="The impact of generative AI on software development productivity and developer job roles">
+                            <span class="chip-icon">⌨</span> GenAI & devs
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: ACTIVE PIPELINE STREAMING (timeline + terminal logs) -->
+            <section class="view-panel hidden" id="view-running">
+                <div class="running-header">
+                    <h2><i class="fa-solid fa-microchip fa-spin-slow"></i> Pipeline Execution</h2>
+                    <div class="active-query" id="running-query-display">Topic: ...</div>
+                </div>
+
+                <!-- Real-time Agent Graph Pipeline -->
+                <div class="pipeline-graph">
+                    <!-- Planner (Top) -->
+                    <div class="graph-node planner-node" id="node-planner">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <div class="node-text">
+                            <span class="node-label">Planner Node</span>
+                            <span class="node-status">Idle</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Branching researchers (Middle) -->
+                    <div class="researchers-branch-container">
+                        <div class="connecting-line-vertical"></div>
+                        <div class="researchers-branch" id="researchers-branch">
+                            <div class="researcher-placeholder">Planner is decomposing query...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Arbitrator (Bottom-Middle) -->
+                    <div class="graph-node arbitrator-node" id="node-arbitrator">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div class="node-text">
+                            <span class="node-label">Arbitrator Node</span>
+                            <span class="node-status">Idle</span>
+                        </div>
+                    </div>
+
+                    <!-- Synthesizer (Bottom) -->
+                    <div class="graph-node synthesizer-node" id="node-synthesizer">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div class="node-text">
+                            <span class="node-label">Synthesizer Node</span>
+                            <span class="node-status">Idle</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Active Sources Bar -->
+                <div class="active-sources-bar hidden" id="active-sources-bar">
+                    <span class="sources-title"><i class="fa-solid fa-globe"></i> Queried Sources:</span>
+                    <div class="sources-stack" id="active-sources-stack"></div>
+                </div>
+
+                <!-- Console Output Panel -->
+                <div class="console-card">
+                    <div class="console-header">
+                        <div class="window-buttons">
+                            <span class="win-btn red"></span>
+                            <span class="win-btn yellow"></span>
+                            <span class="win-btn green"></span>
+                        </div>
+                        <div class="console-title">agent_execution_logs.sh</div>
+                        <div class="timer-counter" id="running-timer">00:00</div>
+                    </div>
+                    <div class="console-body" id="console-logs">
+                        <div class="console-line system-msg">Initializing WebSocket socket connection...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 3: REPORT DOSSIER VIEWER -->
+            <section class="view-panel hidden" id="view-result">
+                <div class="result-header-bar">
+                    <button class="btn-secondary" id="btn-new-search">
+                        <i class="fa-solid fa-arrow-left"></i> New Research
+                    </button>
+                    <div class="result-actions">
+                        <button class="btn-action-tool" id="btn-copy-markdown" title="Copy markdown to clipboard">
+                            <i class="fa-solid fa-copy"></i> Copy Markdown
+                        </button>
+                        <button class="btn-action-tool" id="btn-print" title="Print or save as PDF">
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RENDERED REPORT PAPER -->
+                <article class="report-paper-container">
+                    <div class="report-watermark">
+                        <span class="watermark-rm">RM</span> RESEARCHMIND INTEL DOSSIER
+                    </div>
+                    
+                    <!-- Dynamic ChatGPT-style Sources Bar -->
+                    <div class="report-sources-section hidden" id="report-sources-section">
+                        <div class="sources-stacked-header" id="report-sources-trigger">
+                            <div class="stacked-avatars" id="report-sources-avatars"></div>
+                            <span class="sources-text-label"><strong id="sources-count">0</strong> Citations & Sources</span>
+                            <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <div class="sources-dropdown-grid hidden" id="report-sources-grid">
+                            <!-- Populated with domain cards -->
+                        </div>
+                    </div>
+
+                    <div class="report-body" id="report-output-rendered">
+                        <!-- Rendered markdown goes here -->
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <!-- Popup alert system -->
+    <div class="toast-notification hidden" id="toast">
+        <i id="toast-icon" class="fa-solid fa-circle-info"></i>
+        <span id="toast-message">Message text</span>
+    </div>
+
+    <!-- Main WebApp JS -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

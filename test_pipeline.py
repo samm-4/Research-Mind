@@ -1,16 +1,3 @@
-"""
-main.py
-Entry point for ResearchMind.
-
-This file is intentionally simple — it just:
-  1. Loads environment variables (.env)
-  2. Builds the LangGraph pipeline
-  3. Kicks it off with the user's query
-  4. Prints the final accepted results
-
-All the orchestration logic (looping, retries, routing) lives
-inside core/graph.py. main.py is just the "start button".
-"""
 import os
 import re
 import sys
@@ -28,16 +15,16 @@ from core.graph import build_research_graph
 
 
 def main():
+    user_query = "Solid-state lithium batteries silicon anode vs lithium metal anode volume expansion"
     print("=" * 50)
-    print("       ResearchMind — Multi-Agent Pipeline")
+    print("       ResearchMind — Test Run")
+    print(f"Topic: {user_query}")
     print("=" * 50)
-    user_query = input("\nEnter a research topic: ")
 
     # Build the LangGraph state machine
     graph = build_research_graph()
 
-    # Run the full pipeline by providing the initial state
-    # LangGraph handles: Planner → Researcher → Arbitrator → (retry?) → ...
+    # Run the full pipeline
     final_state = graph.invoke({
         "user_query": user_query,
         "subqueries": [],
@@ -48,7 +35,6 @@ def main():
         "final_results": []
     })
 
-    # ── Print the final accepted results ──
     print("\n" + "=" * 50)
     print("       FINAL SYNTHESIZED REPORT")
     print("=" * 50)
@@ -56,10 +42,7 @@ def main():
     report = final_state.get("synthesized_report", "")
     if report:
         print(report)
-        
-        # Automatically export the report to reports/ folder
         os.makedirs("reports", exist_ok=True)
-        # Create a safe filename from the user query
         safe_query = re.sub(r'[^a-zA-Z0-9_\-]+', '_', user_query).strip('_')[:50]
         filename = f"reports/report_{safe_query}.md"
         with open(filename, "w", encoding="utf-8") as f:
