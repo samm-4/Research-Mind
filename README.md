@@ -77,8 +77,6 @@ graph TD
    GEMINI_API_KEY="your-gemini-api-key"
    TAVILY_API_KEY="your-tavily-api-key"
    ```
-   *(Note: The `.env` file is excluded from version control for security).*
-
 ---
 
 ## 🚀 How to Run
