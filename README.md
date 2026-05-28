@@ -10,15 +10,15 @@ ResearchMind orchestrates four specialized agents to produce deep, high-quality 
 
 ```mermaid
 graph TD
-    User([User Input]) --> Planner[1. Planner Agent]
-    Planner -->|Splits into sub-queries| Researcher[2. Researcher Agent]
-    Researcher -->|Performs Web Search & RAG| Arbitrator[3. Arbitrator Agent]
+    User(["User Input"]) --> Planner["1. Planner Agent"]
+    Planner -->|Splits into sub-queries| Researcher["2. Researcher Agent"]
+    Researcher -->|Performs Web Search & RAG| Arbitrator["3. Arbitrator Agent"]
     
     Arbitrator -->|Insufficient Info / Quality Fail| Researcher
-    Arbitrator -->|Sufficient Info / Pass| Synthesizer[4. Synthesizer Agent]
+    Arbitrator -->|Sufficient Info / Pass| Synthesizer["4. Synthesizer Agent"]
     
-    Synthesizer -->|Formats & Merges| Report[\Final Markdown Report/ ]
-    Report --> Export[Auto-exported to reports/]
+    Synthesizer -->|Formats & Merges| Report[\"Final Markdown Report\"/]
+    Report --> Export["Auto-exported to reports/"]
 ```
 
 1. **Planner Agent**: Analyzes a complex research topic and breaks it down into a list of specific sub-queries.
